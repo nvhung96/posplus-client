@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:postplus_client/auth.dart';
 import 'package:postplus_client/data/constants.dart';
@@ -127,24 +128,33 @@ class _LoginScreenState extends State<LoginScreen>
             width: 100.0,
           ),
         ),
-        new Text(
-          "QUẢN LÝ CÔNG VIỆC",
-          textScaleFactor: 1.6,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: Constants.mainColor,
-          ),
+        new Padding(
+          padding: const EdgeInsets.only(top: 5.0),
+          child: new BorderedText(
+              strokeWidth: 1.8,
+              strokeColor: Constants.lightColor,
+              child: new Text(
+                "QUẢN LÝ CÔNG VIỆC",
+                textScaleFactor: 1.6,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Constants.mainColor,
+                ),
+              )),
         ),
         new Padding(
           padding: const EdgeInsets.only(top: 5.0),
-          child: new Text(
-            "FULLHOUSE PIZZA",
-            textScaleFactor: 1.1,
-            style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Constants.mainColor,
-                fontStyle: FontStyle.italic),
-          ),
+          child: new BorderedText(
+              strokeWidth: 1.2,
+              strokeColor: Constants.lightColor,
+              child: new Text(
+                "FULLHOUSE PIZZA",
+                textScaleFactor: 1.1,
+                style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: Constants.mainColor,
+                    fontStyle: FontStyle.italic),
+              )),
         ),
         new Form(
             key: formKey,
