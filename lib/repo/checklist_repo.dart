@@ -5,4 +5,6 @@ abstract class ChecklistRepo {
   Future<List<Checklist>> getChecklists(Map condition, int page, int limit);
 
   Future<List<Item>> getItems(Map condition, int page, int limit);
+
+  Future<List<Item>> getItemsByChecklistId(int checklistId, int page, int limit);
 }

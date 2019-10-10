@@ -20,7 +20,8 @@ class ChecklistRestRepo implements ChecklistRepo {
       "Authorization": "Bearer ${token}",
     };
 
-    var res = await _networkUtil.get(BASE_URL + "/checklists", headers: headers);
+    var res =
+        await _networkUtil.get(BASE_URL + "/checklists", headers: headers);
 
     print("=====> headers Info: " + headers.toString());
     print("=====> getChecklists Result: " + res.toString());
@@ -39,7 +40,34 @@ class ChecklistRestRepo implements ChecklistRepo {
 
   @override
   Future<List<Item>> getItems(Map condition, int page, int limit) async {
-    // TODO: implement getItems
-    return null;
+    return <Item>[];
+  }
+
+  @override
+  Future<List<Item>> getItemsByChecklistId(
+      int checklistId, int page, int limit) async {
+    String token = await _userRepo.getToken();
+
+    Map<String, String> headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer ${token}",
+    };
+
+    var res = await _networkUtil.get("${BASE_URL}/checklists/${checklistId}",
+        headers: headers);
+
+    print("=====> headers Info: " + headers.toString());
+    print("=====> getItemsByChecklistId Result: " + res.toString());
+
+    if (res["error"] != null) {
+      return <Item>[];
+    } else {
+      List<Item> items = <Item>[];
+      for (dynamic map in res["data"]) {
+        items.add(Item.map(map));
+      }
+
+      return items;
+    }
   }
 }

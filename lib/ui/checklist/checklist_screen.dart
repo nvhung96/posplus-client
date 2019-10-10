@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:postplus_client/model/checklist.dart';
+import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
-import 'package:postplus_client/ui/checklist/checklist_screen.dart';
+import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
 import 'package:postplus_client/ui/home/home_drawer.dart';
 import 'package:postplus_client/ui/home/home_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
@@ -16,18 +17,27 @@ const ShapeBorder shapeBorder = const RoundedRectangleBorder(
   ),
 );
 
-class HomeScreen extends StatefulWidget {
+class ChecklistScreen extends StatefulWidget {
+  ChecklistScreen({Key key, this.id}) : super(key: key);
+
+  final int id;
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _ChecklistScreenState createState() => _ChecklistScreenState(id);
 }
 
-class _HomeScreenState extends BaseView {
+class _ChecklistScreenState extends BaseView {
   BuildContext _context;
-  HomePresenter _presenter;
+  ChecklistPresenter _presenter;
+  int _id;
+
+  _ChecklistScreenState(int id) {
+    _id = id;
+  }
 
   @override
   void initState() {
-    _presenter = new HomePresenter(this);
+    _presenter = new ChecklistPresenter(this);
     super.initState();
   }
 
@@ -38,7 +48,7 @@ class _HomeScreenState extends BaseView {
 
   @override
   void onLogoutSuccess() {
-    print("HomeScreen_context: " + _context.toString());
+    print("ChecklistScreen_context: " + _context.toString());
     Navigator.of(_context).pushNamed("/");
   }
 
@@ -53,10 +63,10 @@ class _HomeScreenState extends BaseView {
           ),
           drawer: HomeDrawer(),
           body: FutureBuilder(
-              future: _presenter.getChecklists(),
-              initialData: _presenter.checklists,
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<Checklist>> checklists) {
+              future: _presenter.getItems(_id),
+              initialData: _presenter.items,
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Item>> checklists) {
                 if (checklists.data != null && checklists.data.length > 0) {
                   return Scrollbar(
                     child: ListView.builder(
@@ -73,13 +83,11 @@ class _HomeScreenState extends BaseView {
         ));
   }
 
-  Widget buildItem(Checklist checklist) {
-    String createdAt = DateFormat("dd-MM-yyyy").format(checklist.createdAt);
+  Widget buildItem(Item item) {
+    String createdAt = DateFormat("dd-MM-yyyy").format(item.checklistCreatedAt);
 
     return GestureDetector(
-      onTap: () {
-        navigateToDetail(checklist);
-      },
+      onTap: () {},
       child: SafeArea(
         top: false,
         bottom: false,
@@ -99,9 +107,7 @@ class _HomeScreenState extends BaseView {
                   Container(
                     width: 80.0,
                     child: CircleAvatar(
-                      child: Icon(
-                        checklist.icon,
-                      ),
+                      child: Icon(Icons.fastfood),
                       foregroundColor: Colors.white,
                       backgroundColor: COLOR_MAIN,
                     ),
@@ -111,7 +117,7 @@ class _HomeScreenState extends BaseView {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          buildItemTitle(checklist.name),
+                          buildItemTitle(item.name),
                           buildItemDetail(Icons.access_time, createdAt),
                           buildItemDetail(Icons.check, "15/20"),
                         ]),
@@ -128,7 +134,8 @@ class _HomeScreenState extends BaseView {
   Widget buildItemTitle(String name) {
     return Padding(
       padding: EdgeInsets.only(top: 15.0),
-      child: Text(name,
+      child: Text(name.trim(),
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context)
               .textTheme
               .body2
@@ -154,12 +161,5 @@ class _HomeScreenState extends BaseView {
         ],
       ),
     );
-  }
-
-  void navigateToDetail(Checklist checklist) {
-    Navigator.push(
-        _context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => ChecklistScreen(id: checklist.id)));
   }
 }

@@ -16,4 +16,10 @@ class ChecklistImplRepo implements ChecklistRepo {
     return null;
   }
 
+  @override
+  Future<List<Item>> getItemsByChecklistId(int checklistId, int page, int limit) {
+    // TODO: implement getItemsByChecklistId
+    return null;
+  }
+
 }
