@@ -1,6 +1,6 @@
 import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/repo/checklist_repo.dart';
-import 'package:postplus_client/repo/impl/checklist_impl_repo.dart';
+import 'package:postplus_client/repo/impl/checklist_rest_repo.dart';
 import 'package:postplus_client/ui/base/base_presenter.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 
@@ -11,11 +11,11 @@ import 'package:postplus_client/ui/base/base_view.dart';
 class HomePresenter extends BasePresenter {
   HomePresenter(BaseView view) : super(view);
 
-  ChecklistRepo _checklistRepo = ChecklistImplRepo();
+  ChecklistRepo _checklistRepo = ChecklistRestRepo();
 
   List<Checklist> checklists = <Checklist>[];
 
-  Future<List<Checklist>> getApplications() async {
+  Future<List<Checklist>> getChecklists() async {
     Map cond = Map();
 
     checklists = await _checklistRepo.getChecklists(cond, 1, 10);

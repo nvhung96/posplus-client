@@ -1,5 +1,5 @@
-import 'package:postplus_client/data/dao/impl/user_sqlite_dao.dart';
-import 'package:postplus_client/data/dao/user_dao.dart';
+import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
+import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/ui/base/base_presenter.dart';
 import 'package:postplus_client/ui/home/logout_contract.dart';
 
@@ -16,10 +16,10 @@ class LogoutPresenter extends BasePresenter {
 
   LogoutContract _contract;
 
-  UserDao _userDao = UserSqliteDao();
+  UserRepo _userRepo = UserSqliteRepo();
 
   doLogout() async {
-    await _userDao.deleteUsers();
+    await _userRepo.deleteUsers();
 
     _contract.onLogoutSuccess();
   }

@@ -2,6 +2,7 @@ import 'package:postplus_client/data/rest_response.dart';
 import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/repo/authen_repo.dart';
 import 'package:postplus_client/repo/impl/authen_demo_repo.dart';
+import 'package:postplus_client/repo/impl/authen_rest_repo.dart';
 
 /// TODO: handle the login logic
 /// TODO: defines an interface for LoginScreen view
@@ -15,7 +16,7 @@ abstract class LoginScreenContract {
 
 class LoginScreenPresenter {
   LoginScreenContract _view;
-  AuthenRepo authenRepo = new AuthenDemoRepo();
+  AuthenRepo authenRepo = new AuthenRestRepo();
 
   LoginScreenPresenter(this._view);
 

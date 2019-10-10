@@ -1,5 +1,5 @@
-import 'package:postplus_client/data/dao/impl/user_sqlite_dao.dart';
-import 'package:postplus_client/data/dao/user_dao.dart';
+import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
+import 'package:postplus_client/repo/user_repo.dart';
 
 enum AuthState { LOGGED_IN, LOGGED_OUT }
 
@@ -15,7 +15,7 @@ class AuthStateProvider {
   factory AuthStateProvider() => _instance;
 
   List<AuthStateListener> _subscribers;
-  UserDao _userDao = UserSqliteDao();
+  UserRepo _userRepo = UserSqliteRepo();
 
   AuthStateProvider.internal() {
     _subscribers = new List<AuthStateListener>();
@@ -23,7 +23,7 @@ class AuthStateProvider {
   }
 
   void initState() async {
-    var isLoggedIn = await _userDao.isLoggedIn();
+    var isLoggedIn = await _userRepo.isLoggedIn();
 
     if (isLoggedIn)
       notify(AuthState.LOGGED_IN);

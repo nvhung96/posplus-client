@@ -1,9 +1,9 @@
-import 'package:postplus_client/data/dao/user_dao.dart';
+import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/util/sqlite_database.dart';
 import 'package:sqflite/sqflite.dart';
 
-class UserSqliteDao implements UserDao {
+class UserSqliteRepo implements UserRepo {
   @override
   Future<int> saveUser(User user) async {
     SqliteDatabase db = new SqliteDatabase();
@@ -40,5 +40,20 @@ class UserSqliteDao implements UserDao {
     print("=====> User List isLoggedIn: ${userList.toString()}");
 
     return userList.length > 0 ? true : false;
+  }
+
+  @override
+  Future<String> getToken() async {
+    SqliteDatabase db = new SqliteDatabase();
+    Database conn = await db.open();
+
+    List<Map> userList = await conn.query("User");
+
+    for (Map user in userList) {
+      if (user["token"].toString().isNotEmpty) {
+        return user["token"].toString();
+      }
+    }
+    return "";
   }
 }

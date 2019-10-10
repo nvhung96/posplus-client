@@ -13,12 +13,13 @@ class NetworkUtil {
 
   final JsonDecoder _decoder = new JsonDecoder();
 
-  Future<dynamic> get(String url) async {
-    return http.get(url).then((http.Response response) async {
+  Future<dynamic> get(String url, {Map headers}) async {
+    return http.get(url, headers: headers).then((http.Response response) async {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      if (statusCode < 200 || statusCode > 400 || json == null) {
+      //if (statusCode < 200 || statusCode > 400 || json == null) {
+      if (json == null) {
         throw new Exception("Error while fetching data");
       }
       return _decoder.convert(res);
@@ -32,7 +33,8 @@ class NetworkUtil {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
-      if (statusCode < 200 || statusCode > 400 || json == null) {
+      //if (statusCode < 200 || statusCode > 400 || json == null) {
+      if (json == null) {
         throw new Exception("Error while fetching data");
       }
       return _decoder.convert(res);

@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:postplus_client/service/auth.dart';
-import 'package:postplus_client/data/dao/impl/user_sqlite_dao.dart';
-import 'package:postplus_client/data/dao/user_dao.dart';
+import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
+import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/ui/login/login_screen_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen>
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
 
-  UserDao _userDao = UserSqliteDao();
+  UserRepo _userRepo = UserSqliteRepo();
 
   @override
   void initState() {
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen>
     _timer.cancel();
     _showSnackBar("Đăng nhập thành công", false);
     setState(() => _isLoading = false);
-    await _userDao.saveUser(user);
+    await _userRepo.saveUser(user);
 
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN);
