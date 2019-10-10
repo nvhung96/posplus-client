@@ -44,7 +44,7 @@ class Checklist {
     this.assignee = map["assignee"];
     this.createdAt = DateTime.parse(map["created_at"]);
     this.updatedAt = DateTime.parse(map["updated_at"]);
-    this.icon = map["icon"];
+    this.icon = map["icon"] != null ? map["icon"] : Icons.playlist_add_check;
   }
 
   Map<String, dynamic> toMap() {

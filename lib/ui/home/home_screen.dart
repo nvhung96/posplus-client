@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/home/home_drawer.dart';
@@ -72,9 +73,11 @@ class _HomeScreenState extends BaseView {
   }
 
   Widget buildItem(Checklist checklist) {
+    String createdAt = DateFormat("dd-MM-yyyy").format(checklist.createdAt);
+
     return GestureDetector(
       onTap: () {
-        navigateToApp(checklist);
+        navigateToDetail(checklist);
       },
       child: SafeArea(
         top: false,
@@ -82,7 +85,7 @@ class _HomeScreenState extends BaseView {
         child: Padding(
           padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
           child: SizedBox(
-            height: 80.0,
+            height: 100.0,
             child: Card(
               // This ensures that the Card's children are clipped correctly.
               clipBehavior: Clip.antiAlias,
@@ -103,9 +106,14 @@ class _HomeScreenState extends BaseView {
                     ),
                   ),
                   Container(
-                    child: Text(checklist.name,
-                        style: Theme.of(context).textTheme.body2.merge(
-                            TextStyle(color: COLOR_MAIN, fontSize: 18.0))),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          buildItemTitle(checklist.name),
+                          buildItemDetail(Icons.access_time, createdAt),
+                          buildItemDetail(Icons.check, "15/20"),
+                        ]),
                   ),
                 ],
               ),
@@ -116,7 +124,38 @@ class _HomeScreenState extends BaseView {
     );
   }
 
-  void navigateToApp(Checklist checklist) {
+  Widget buildItemTitle(String name) {
+    return Padding(
+      padding: EdgeInsets.only(top: 15.0),
+      child: Text(name,
+          style: Theme.of(context)
+              .textTheme
+              .body2
+              .merge(TextStyle(color: COLOR_MAIN, fontSize: 18.0))),
+    );
+  }
+
+  Widget buildItemDetail(IconData iconData, String text) {
+    return Padding(
+      padding: EdgeInsets.only(top: 5.0),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            iconData,
+            size: 12.0,
+            color: COLOR_MAIN,
+          ),
+          Text(" ${text}",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption
+                  .merge(TextStyle(color: COLOR_MAIN))),
+        ],
+      ),
+    );
+  }
+
+  void navigateToDetail(Checklist checklist) {
     /*if (application.route.isNotEmpty)
       Navigator.of(_context).pushNamed(application.route);*/
   }

@@ -17,19 +17,32 @@ class AuthenRestRepo implements AuthenRepo {
     };
 
     String loginInfo = jsonEncode({
-      "username": username,
+      "email": username,
       "password": password,
     });
 
     var res = await _networkUtil.post(BASE_URL + "/login",
         headers: headers, body: loginInfo);
 
+    print("=====> Login Data: " + loginInfo);
     print("=====> Login Result: " + res.toString());
 
-    if (res["error"] != null) {
-      return RestResponse(0, res["error"]["message"], null);
-    } else {
+    if (res["errors"] != null) {
+      if (res["errors"]["email"][0] != null)
+        return RestResponse(0, res["errors"]["email"][0], null);
 
+      if (res["errors"]["password"][0] != null)
+        return RestResponse(0, res["errors"]["password"][0], null);
+
+      return RestResponse(
+          0, "Có lỗi xảy ra. Vui lòng thử lại sau (Err: 2)", null);
+    } else if (res["error"] != null) {
+      String error = res["error"]["message"] != null
+          ? res["error"]["message"]
+          : "Có lỗi xảy ra. Vui lòng thử lại sau (Err: 1)";
+
+      return RestResponse(0, error, null);
+    } else {
       Map resData = {
         'username': username,
         'token': res["data"]["token"],
