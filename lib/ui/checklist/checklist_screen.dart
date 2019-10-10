@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
 import 'package:postplus_client/ui/home/home_drawer.dart';
-import 'package:postplus_client/ui/home/home_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
 const ShapeBorder shapeBorder = const RoundedRectangleBorder(
@@ -55,32 +53,29 @@ class _ChecklistScreenState extends BaseView {
   @override
   Widget build(BuildContext context) {
     _context = context;
-    return new WillPopScope(
-        onWillPop: () async => false,
-        child: new Scaffold(
-          appBar: new AppBar(
-            title: new Text("$TITLE_CHECKLISTS"),
-          ),
-          drawer: HomeDrawer(),
-          body: FutureBuilder(
-              future: _presenter.getItems(_id),
-              initialData: _presenter.items,
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<Item>> checklists) {
-                if (checklists.data != null && checklists.data.length > 0) {
-                  return Scrollbar(
-                    child: ListView.builder(
-                      itemCount: checklists.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return buildItem(checklists.data[index]);
-                      },
-                    ),
-                  );
-                } else {
-                  return Text("Đang tải dữ liệu...");
-                }
-              }),
-        ));
+    return Scaffold(
+      appBar: new AppBar(
+        title: new Text("$TITLE_CHECKLISTS"),
+      ),
+      body: FutureBuilder(
+          future: _presenter.getItems(_id),
+          initialData: _presenter.items,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Item>> checklists) {
+            if (checklists.data != null && checklists.data.length > 0) {
+              return Scrollbar(
+                child: ListView.builder(
+                  itemCount: checklists.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return buildItem(checklists.data[index]);
+                  },
+                ),
+              );
+            } else {
+              return Text("Đang tải dữ liệu...");
+            }
+          }),
+    );
   }
 
   Widget buildItem(Item item) {
