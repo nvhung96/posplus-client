@@ -1,4 +1,4 @@
-import 'package:postplus_client/routes.dart';
+import 'package:postplus_client/util/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

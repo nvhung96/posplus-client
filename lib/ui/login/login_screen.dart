@@ -3,11 +3,12 @@ import 'dart:ui';
 
 import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
-import 'package:postplus_client/auth.dart';
-import 'package:postplus_client/data/constants.dart';
-import 'package:postplus_client/data/database_helper.dart';
-import 'package:postplus_client/models/user.dart';
-import 'package:postplus_client/screens/login/login_screen_presenter.dart';
+import 'package:postplus_client/service/auth.dart';
+import 'package:postplus_client/data/dao/impl/user_sqlite_dao.dart';
+import 'package:postplus_client/data/dao/user_dao.dart';
+import 'package:postplus_client/model/user.dart';
+import 'package:postplus_client/ui/login/login_screen_presenter.dart';
+import 'package:postplus_client/util/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,6 +17,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     implements LoginScreenContract, AuthStateListener {
+  final formKey = new GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+
   BuildContext _context;
   bool _isLoading = false;
   String _username, _password;
@@ -25,8 +29,7 @@ class _LoginScreenState extends State<LoginScreen>
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
 
-  final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  UserDao _userDao = UserSqliteDao();
 
   @override
   void initState() {
@@ -92,8 +95,7 @@ class _LoginScreenState extends State<LoginScreen>
     _timer.cancel();
     _showSnackBar("Đăng nhập thành công", false);
     setState(() => _isLoading = false);
-    var db = new DatabaseHelper();
-    await db.saveUser(user);
+    await _userDao.saveUser(user);
 
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN);
@@ -114,9 +116,9 @@ class _LoginScreenState extends State<LoginScreen>
       onPressed: _submit,
       child: new Text(
         "ĐĂNG NHẬP",
-        style: TextStyle(color: Constants.lightColor),
+        style: TextStyle(color: COLOR_CARD),
       ),
-      color: Constants.mainColor,
+      color: COLOR_MAIN,
     );
 
     var loginForm = new Column(
@@ -132,13 +134,13 @@ class _LoginScreenState extends State<LoginScreen>
           padding: const EdgeInsets.only(top: 5.0),
           child: new BorderedText(
               strokeWidth: 1.8,
-              strokeColor: Constants.lightColor,
+              strokeColor: COLOR_CARD,
               child: new Text(
-                "QUẢN LÝ CÔNG VIỆC",
+                APP_NAME,
                 textScaleFactor: 1.6,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  color: Constants.mainColor,
+                  color: COLOR_MAIN,
                 ),
               )),
         ),
@@ -146,13 +148,13 @@ class _LoginScreenState extends State<LoginScreen>
           padding: const EdgeInsets.only(top: 5.0),
           child: new BorderedText(
               strokeWidth: 1.2,
-              strokeColor: Constants.lightColor,
+              strokeColor: COLOR_CARD,
               child: new Text(
-                "FULLHOUSE PIZZA",
+                COMPANY_NAME,
                 textScaleFactor: 1.1,
                 style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: Constants.mainColor,
+                    color: COLOR_MAIN,
                     fontStyle: FontStyle.italic),
               )),
         ),
@@ -220,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen>
                   child: new Container(
                     child: loginForm,
                     height: 360.0,
-                    width: 280.0,
+                    width: 300.0,
                     decoration: new BoxDecoration(
                         color: Colors.grey.shade50.withOpacity(0.3)),
                   ),
