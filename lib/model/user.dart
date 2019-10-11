@@ -1,28 +1,50 @@
+import 'package:flutter/material.dart';
+
 class User {
-  String _username;
-  String _password;
-  String _token;
+  User({
+    @required this.id,
+    @required this.username,
+    @required this.token,
+    @required this.email,
+    @required this.displayName,
+    @required this.avatar,
+    @required this.phoneNumber,
+    @required this.activated,
+    @required this.forbidden,
+    @required this.language,
+  })  : assert(id != null),
+        assert(username != null),
+        assert(token != null),
+        assert(email != null),
+        assert(displayName != null);
 
-  User(this._username, this._password, this._token);
+  int id;
+  String username;
+  String token;
+  String email;
+  String displayName;
+  String avatar;
+  String phoneNumber;
+  int activated;
+  int forbidden;
+  String language;
 
-  User.map(dynamic obj) {
-    this._username = obj["username"];
-    //this._password = obj["password"];
-    this._password = "";
-    this._token = obj["token"];
+  // TODO: Setter, trả về đối tượng thể hiện của lớp
+  User.map(dynamic map) {
+    this.id = map["id"];
+    this.username = map["username"];
+    this.token = map["token"];
+    this.email = map["email"];
+    this.displayName = map["display_name"];
   }
-
-  String get username => _username;
-
-  String get password => _password;
-
-  String get token => _token;
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
-    map["username"] = _username;
-    map["password"] = _password;
-    map["token"] = _token;
+    map["id"] = id;
+    map["username"] = username;
+    map["token"] = token;
+    map["email"] = email;
+    map["display_name"] = displayName;
 
     return map;
   }

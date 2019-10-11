@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Quản lý Công việc Fullhouse Pizza',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.brown,
       ),
       debugShowCheckedModeBanner: false,
       routes: routes,

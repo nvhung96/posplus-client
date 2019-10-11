@@ -27,4 +27,10 @@ class AuthenDemoRepo implements AuthenRepo {
       return RestResponse(1, "Đăng nhập thành công", User.map(res["user"]));
     }
   }
+
+  @override
+  Future<User> me(String token) {
+    // TODO: implement me
+    return null;
+  }
 }

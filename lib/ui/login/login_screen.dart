@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:bordered_text/bordered_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:postplus_client/service/auth.dart';
+import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
-import 'package:postplus_client/model/user.dart';
+import 'package:postplus_client/service/auth.dart';
+import 'package:postplus_client/ui/inc/password_form_field.dart';
 import 'package:postplus_client/ui/login/login_screen_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
@@ -180,19 +182,10 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 new Padding(
                   padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                  child: new TextFormField(
+                  child: PasswordFormField(
+                    labelText: "MẬT KHẨU",
                     onSaved: (val) => _password = val,
-                    /*validator: (val) {
-                      return val.isEmpty
-                          ? "Mật khẩu không được để trống"
-                          : null;
-                    },*/
-                    obscureText: true,
-                    decoration: new InputDecoration(
-                        labelText: "MẬT KHẨU",
-                        labelStyle: TextStyle(
-                            fontSize: 12.0, fontStyle: FontStyle.italic)),
-                    controller: _passwordTextController,
+                    passwordTextController: _passwordTextController,
                   ),
                 ),
               ],

@@ -1,3 +1,6 @@
+import 'package:postplus_client/model/user.dart';
+import 'package:postplus_client/repo/authen_repo.dart';
+import 'package:postplus_client/repo/impl/authen_rest_repo.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 
@@ -16,6 +19,7 @@ class AuthStateProvider {
 
   List<AuthStateListener> _subscribers;
   UserRepo _userRepo = UserSqliteRepo();
+  AuthenRepo _authenRepo = AuthenRestRepo();
 
   AuthStateProvider.internal() {
     _subscribers = new List<AuthStateListener>();
@@ -25,10 +29,16 @@ class AuthStateProvider {
   void initState() async {
     var isLoggedIn = await _userRepo.isLoggedIn();
 
-    if (isLoggedIn)
-      notify(AuthState.LOGGED_IN);
-    else
+    if (isLoggedIn) {
+      String currentToken = await _userRepo.getToken();
+      User me = await _authenRepo.me(currentToken);
+      if (me == null)
+        notify(AuthState.LOGGED_OUT);
+      else
+        notify(AuthState.LOGGED_IN);
+    } else {
       notify(AuthState.LOGGED_OUT);
+    }
   }
 
   void subscribe(AuthStateListener listener) {

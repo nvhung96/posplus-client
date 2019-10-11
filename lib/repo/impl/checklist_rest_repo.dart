@@ -21,7 +21,7 @@ class ChecklistRestRepo implements ChecklistRepo {
     };
 
     var res =
-        await _networkUtil.get(BASE_URL + "/checklists", headers: headers);
+        await _networkUtil.get("${BASE_URL}/checklists", headers: headers);
 
     print("=====> headers Info: " + headers.toString());
     print("=====> getChecklists Result: " + res.toString());

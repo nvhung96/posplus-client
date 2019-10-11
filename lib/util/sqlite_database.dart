@@ -23,7 +23,8 @@ class SqliteDatabase {
     var databasePath = await getDatabasesPath();
     String path = join(databasePath, 'main.db');
 
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    var theDb = await openDatabase(path,
+        version: 3, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
   }
 
@@ -31,7 +32,15 @@ class SqliteDatabase {
   void _onCreate(Database db, int version) async {
     // TODO: When creating the db, create the table
     await db.execute(
-        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, password TEXT, token TEXT)");
+        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, password TEXT)");
     print("Created tables");
+  }
+
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // TODO: When creating the db, create the table
+    await db.execute("DROP TABLE IF EXISTS User");
+    await db.execute(
+        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, password TEXT, token TEXT, email TEXT, display_name TEXT, avatar TEXT)");
+    print("Upgrade tables");
   }
 }

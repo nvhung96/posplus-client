@@ -21,7 +21,7 @@ class AuthenRestRepo implements AuthenRepo {
       "password": password,
     });
 
-    var res = await _networkUtil.post(BASE_URL + "/login",
+    var res = await _networkUtil.post("${BASE_URL}/login",
         headers: headers, body: loginInfo);
 
     print("=====> Login Data: " + loginInfo);
@@ -43,12 +43,33 @@ class AuthenRestRepo implements AuthenRepo {
 
       return RestResponse(0, error, null);
     } else {
-      Map resData = {
-        'username': username,
-        'token': res["data"]["token"],
-      };
+      // TODO: Lấy thông tin user
+      User user = await me(res["data"]["token"]);
 
-      return RestResponse(1, "Đăng nhập thành công", User.map(resData));
+      return RestResponse(1, "Đăng nhập thành công", user);
+    }
+  }
+
+  @override
+  Future<User> me(String token) async {
+    Map<String, String> headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer ${token}",
+    };
+
+    var res = await _networkUtil.post("${BASE_URL}/me", headers: headers);
+
+    print("=====> URL Info: " + "${BASE_URL}/me");
+    print("=====> headers Info: " + headers.toString());
+    print("=====> me Result: " + res.toString());
+
+    if (res["data"] != null) {
+      res["data"]["username"] = res["data"]["email"];
+      res["data"]["token"] = token;
+
+      return User.map(res["data"]);
+    } else {
+      return null;
     }
   }
 }
