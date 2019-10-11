@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:postplus_client/model/item.dart';
+import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
+import 'package:postplus_client/ui/home/logout_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
 const ShapeBorder shapeBorder = const RoundedRectangleBorder(
@@ -23,7 +25,7 @@ class ChecklistScreen extends StatefulWidget {
   _ChecklistScreenState createState() => _ChecklistScreenState(id);
 }
 
-class _ChecklistScreenState extends BaseView {
+class _ChecklistScreenState extends BaseView implements AuthStateListener {
   BuildContext _context;
   ChecklistPresenter _presenter;
   int _id;
@@ -35,6 +37,8 @@ class _ChecklistScreenState extends BaseView {
   @override
   void initState() {
     _presenter = new ChecklistPresenter(this);
+    var authStateProvider = new AuthStateProvider();
+    authStateProvider.subscribe(this);
     super.initState();
   }
 
@@ -94,6 +98,17 @@ class _ChecklistScreenState extends BaseView {
 
   Widget buildItem(Item item) {
     String createdAt = DateFormat("dd-MM-yyyy").format(item.checklistCreatedAt);
+    String quantity = "Cần mua: ${item.quantity} ${item.unit}";
+    Color cardColor = item.checked ? COLOR_CHECK : COLOR_UNCHECK;
+    Widget button = !item.checked
+        ? RaisedButton.icon(
+            icon: const Icon(Icons.check),
+            color: COLOR_MAIN,
+            textColor: COLOR_CHECK,
+            label: const Text('Hoàn thành'),
+            onPressed: () {},
+          )
+        : Container(child: null, height: 42.0,);
 
     return GestureDetector(
       onTap: () {},
@@ -103,13 +118,13 @@ class _ChecklistScreenState extends BaseView {
         child: Padding(
           padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
           child: SizedBox(
-            height: 100.0,
+            height: 135.0,
             child: Card(
               // This ensures that the Card's children are clipped correctly.
               clipBehavior: Clip.antiAlias,
               shape: shapeBorder,
               elevation: 8.0,
-              color: COLOR_CARD,
+              color: cardColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -122,13 +137,17 @@ class _ChecklistScreenState extends BaseView {
                     ),
                   ),
                   Container(
+                    width: 245.0,
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           buildItemTitle(item.name),
-                          buildItemDetail(Icons.access_time, createdAt),
-                          buildItemDetail(Icons.check, "15/20"),
+                          buildItemDetail(Icons.event_available, "${quantity}"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[button],
+                          ),
                         ]),
                   ),
                 ],
@@ -142,7 +161,7 @@ class _ChecklistScreenState extends BaseView {
 
   Widget buildItemTitle(String name) {
     return Padding(
-      padding: EdgeInsets.only(top: 15.0),
+      padding: EdgeInsets.only(top: 12.0),
       child: Text(name.trim(),
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context)
@@ -159,13 +178,13 @@ class _ChecklistScreenState extends BaseView {
         children: <Widget>[
           Icon(
             iconData,
-            size: 12.0,
+            size: 15.0,
             color: COLOR_MAIN,
           ),
           Text(" ${text}",
               style: Theme.of(context)
                   .textTheme
-                  .caption
+                  .body1
                   .merge(TextStyle(color: COLOR_MAIN))),
         ],
       ),
@@ -190,5 +209,14 @@ class _ChecklistScreenState extends BaseView {
         ],
       ),
     );
+  }
+
+  @override
+  void onAuthStateChanged(AuthState state) async {
+    if (state == AuthState.LOGGED_OUT) {
+      print("ChecklistScreen_context: " + _context.toString());
+      await _presenter.deleteUsers();
+      Navigator.of(_context).pushNamed("/");
+    }
   }
 }

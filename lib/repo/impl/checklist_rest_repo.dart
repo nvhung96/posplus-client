@@ -29,6 +29,7 @@ class ChecklistRestRepo implements ChecklistRepo {
     print("=====> getChecklists Result: " + res.toString());
 
     if (res["error"] != null) {
+
       if (res["error"]["type"] == "TokenExpiredException") {
         var authStateProvider = new AuthStateProvider();
         authStateProvider.notify(AuthState.LOGGED_OUT);

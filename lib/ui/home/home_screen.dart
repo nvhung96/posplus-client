@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:postplus_client/model/checklist.dart';
+import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_screen.dart';
 import 'package:postplus_client/ui/home/home_drawer.dart';
@@ -21,13 +22,15 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends BaseView {
+class _HomeScreenState extends BaseView implements AuthStateListener {
   BuildContext _context;
   HomePresenter _presenter;
 
   @override
   void initState() {
     _presenter = new HomePresenter(this);
+    var authStateProvider = new AuthStateProvider();
+    authStateProvider.subscribe(this);
     super.initState();
   }
 
@@ -86,7 +89,7 @@ class _HomeScreenState extends BaseView {
         child: Padding(
           padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
           child: SizedBox(
-            height: 100.0,
+            height: 110.0,
             child: Card(
               // This ensures that the Card's children are clipped correctly.
               clipBehavior: Clip.antiAlias,
@@ -112,8 +115,8 @@ class _HomeScreenState extends BaseView {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           buildItemTitle(checklist.name),
-                          buildItemDetail(Icons.access_time, createdAt),
-                          buildItemDetail(Icons.check, "15/20"),
+                          buildItemDetail(Icons.date_range, createdAt),
+                          buildItemDetail(Icons.check, "Hoàn thành: 15/20"),
                         ]),
                   ),
                 ],
@@ -127,7 +130,7 @@ class _HomeScreenState extends BaseView {
 
   Widget buildItemTitle(String name) {
     return Padding(
-      padding: EdgeInsets.only(top: 15.0),
+      padding: EdgeInsets.only(top: 12.0),
       child: Text(name,
           style: Theme.of(context)
               .textTheme
@@ -143,13 +146,13 @@ class _HomeScreenState extends BaseView {
         children: <Widget>[
           Icon(
             iconData,
-            size: 12.0,
+            size: 15.0,
             color: COLOR_MAIN,
           ),
           Text(" ${text}",
               style: Theme.of(context)
                   .textTheme
-                  .caption
+                  .body1
                   .merge(TextStyle(color: COLOR_MAIN))),
         ],
       ),
@@ -160,6 +163,16 @@ class _HomeScreenState extends BaseView {
     Navigator.push(
         _context,
         MaterialPageRoute(
-            builder: (BuildContext context) => ChecklistScreen(id: checklist.id)));
+            builder: (BuildContext context) =>
+                ChecklistScreen(id: checklist.id)));
+  }
+
+  @override
+  void onAuthStateChanged(AuthState state) async {
+    if (state == AuthState.LOGGED_OUT) {
+      print("HomeScreen_context: " + _context.toString());
+      await _presenter.deleteUsers();
+      Navigator.of(_context).pushNamed("/");
+    }
   }
 }

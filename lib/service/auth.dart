@@ -53,6 +53,8 @@ class AuthStateProvider {
   }
 
   void notify(AuthState state) {
+    print("=====> NOTIFY: " + state.toString());
+    print("=====> NOTIFY _subscribers SIZE: " + _subscribers.toString());
     _subscribers.forEach((AuthStateListener s) => s.onAuthStateChanged(state));
   }
 }

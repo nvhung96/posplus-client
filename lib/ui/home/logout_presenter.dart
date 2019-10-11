@@ -1,5 +1,4 @@
 import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
-import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/ui/base/base_presenter.dart';
 import 'package:postplus_client/ui/home/logout_contract.dart';

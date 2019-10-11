@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:bordered_text/bordered_text.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
-import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/ui/inc/password_form_field.dart';
