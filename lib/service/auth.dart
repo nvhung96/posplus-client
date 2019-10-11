@@ -1,6 +1,7 @@
 import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/repo/authen_repo.dart';
 import 'package:postplus_client/repo/impl/authen_rest_repo.dart';
+import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 
@@ -18,7 +19,7 @@ class AuthStateProvider {
   factory AuthStateProvider() => _instance;
 
   List<AuthStateListener> _subscribers;
-  UserRepo _userRepo = UserSqliteRepo();
+  UserRepo _userRepo = UserPrefsRepo();
   AuthenRepo _authenRepo = AuthenRestRepo();
 
   AuthStateProvider.internal() {

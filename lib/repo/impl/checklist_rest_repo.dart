@@ -1,13 +1,15 @@
 import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/repo/checklist_repo.dart';
+import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
+import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/util/constants.dart';
 import 'package:postplus_client/util/network_util.dart';
 
 class ChecklistRestRepo implements ChecklistRepo {
-  UserRepo _userRepo = UserSqliteRepo();
+  UserRepo _userRepo = UserPrefsRepo();
   NetworkUtil _networkUtil = new NetworkUtil();
 
   @override
@@ -27,6 +29,10 @@ class ChecklistRestRepo implements ChecklistRepo {
     print("=====> getChecklists Result: " + res.toString());
 
     if (res["error"] != null) {
+      if (res["error"]["type"] == "TokenExpiredException") {
+        var authStateProvider = new AuthStateProvider();
+        authStateProvider.notify(AuthState.LOGGED_OUT);
+      }
       return <Checklist>[];
     } else {
       List<Checklist> checklists = <Checklist>[];
@@ -60,6 +66,10 @@ class ChecklistRestRepo implements ChecklistRepo {
     print("=====> getItemsByChecklistId Result: " + res.toString());
 
     if (res["error"] != null) {
+      if (res["error"]["type"] == "TokenExpiredException") {
+        var authStateProvider = new AuthStateProvider();
+        authStateProvider.notify(AuthState.LOGGED_OUT);
+      }
       return <Item>[];
     } else {
       List<Item> items = <Item>[];

@@ -1,3 +1,4 @@
+import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/ui/base/base_presenter.dart';
@@ -16,7 +17,7 @@ class LogoutPresenter extends BasePresenter {
 
   LogoutContract _contract;
 
-  UserRepo _userRepo = UserSqliteRepo();
+  UserRepo _userRepo = UserPrefsRepo();
 
   doLogout() async {
     await _userRepo.deleteUsers();

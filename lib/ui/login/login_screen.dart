@@ -5,6 +5,7 @@ import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:postplus_client/model/user.dart';
+import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
 import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/service/auth.dart';
@@ -31,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen>
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
 
-  UserRepo _userRepo = UserSqliteRepo();
+  UserRepo _userRepo = UserPrefsRepo();
 
   @override
   void initState() {

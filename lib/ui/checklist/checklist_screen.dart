@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
-import 'package:postplus_client/ui/home/home_drawer.dart';
 import 'package:postplus_client/util/constants.dart';
 
 const ShapeBorder shapeBorder = const RoundedRectangleBorder(
@@ -54,8 +53,23 @@ class _ChecklistScreenState extends BaseView {
   Widget build(BuildContext context) {
     _context = context;
     return Scaffold(
-      appBar: new AppBar(
-        title: new Text("$TITLE_CHECKLISTS"),
+      appBar: AppBar(
+        title: Text("$TITLE_CHECKLISTS"),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(38.0),
+          child: Container(
+            color: Colors.white60,
+            height: 38.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                buildBottomAppBarItem(Icons.check, "15/20"),
+                buildBottomAppBarItem(Icons.date_range, "15/12/2019"),
+              ],
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder(
           future: _presenter.getItems(_id),
@@ -153,6 +167,26 @@ class _ChecklistScreenState extends BaseView {
                   .textTheme
                   .caption
                   .merge(TextStyle(color: COLOR_MAIN))),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBottomAppBarItem(IconData iconData, String text) {
+    return Padding(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            iconData,
+            size: 18.0,
+            color: COLOR_MAIN,
+          ),
+          Text(" ${text}",
+              style: Theme.of(context)
+                  .textTheme
+                  .body2
+                  .merge(TextStyle(color: COLOR_MAIN, fontSize: 18.0))),
         ],
       ),
     );

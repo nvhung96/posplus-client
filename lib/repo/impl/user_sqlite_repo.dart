@@ -1,5 +1,5 @@
-import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/model/user.dart';
+import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/util/sqlite_database.dart';
 import 'package:sqflite/sqflite.dart';
 
