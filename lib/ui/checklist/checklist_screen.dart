@@ -4,7 +4,6 @@ import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
-import 'package:postplus_client/ui/home/logout_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
 const ShapeBorder shapeBorder = const RoundedRectangleBorder(
@@ -17,21 +16,24 @@ const ShapeBorder shapeBorder = const RoundedRectangleBorder(
 );
 
 class ChecklistScreen extends StatefulWidget {
-  ChecklistScreen({Key key, this.id}) : super(key: key);
+  ChecklistScreen({Key key, this.id, this.name}) : super(key: key);
 
   final int id;
+  final String name;
 
   @override
-  _ChecklistScreenState createState() => _ChecklistScreenState(id);
+  _ChecklistScreenState createState() => _ChecklistScreenState(id, name);
 }
 
 class _ChecklistScreenState extends BaseView implements AuthStateListener {
   BuildContext _context;
   ChecklistPresenter _presenter;
   int _id;
+  String _name;
 
-  _ChecklistScreenState(int id) {
+  _ChecklistScreenState(int id, String name) {
     _id = id;
+    _name = name;
   }
 
   @override
@@ -39,6 +41,10 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
     _presenter = new ChecklistPresenter(this);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
+
+    _presenter.getChecklist(_id);
+    _presenter.getItems(_id);
+
     super.initState();
   }
 
@@ -56,9 +62,20 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
   @override
   Widget build(BuildContext context) {
     _context = context;
+    _name = _name != null ? _name.trim() : TITLE_CHECKLISTS;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("$TITLE_CHECKLISTS"),
+        title: Text("${_name}"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.sync, semanticLabel: 'Reload'),
+            onPressed: () {
+              _presenter.getChecklist(_id);
+              _presenter.getItems(_id);
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(38.0),
           child: Container(
@@ -68,16 +85,30 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                buildBottomAppBarItem(Icons.check, "15/20"),
-                buildBottomAppBarItem(Icons.date_range, "15/12/2019"),
+                buildBottomAppBarItem(
+                    Icons.check, "${_presenter.completedRate}"),
+                buildBottomAppBarItem(
+                    Icons.date_range, "${_presenter.createdAt}"),
               ],
             ),
           ),
         ),
       ),
-      body: FutureBuilder(
+      body: _presenter.items.isNotEmpty
+          ? Scrollbar(
+              child: ListView.builder(
+                itemCount: _presenter.items.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return buildItem(_presenter.items[index]);
+                },
+              ),
+            )
+          : Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            ),
+      /*body: FutureBuilder(
           future: _presenter.getItems(_id),
-          initialData: _presenter.items,
           builder:
               (BuildContext context, AsyncSnapshot<List<Item>> checklists) {
             if (checklists.data != null && checklists.data.length > 0) {
@@ -90,9 +121,12 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
                 ),
               );
             } else {
-              return Text("Đang tải dữ liệu...");
+              return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(),
+              );
             }
-          }),
+          }),*/
     );
   }
 
@@ -104,11 +138,16 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
         ? RaisedButton.icon(
             icon: const Icon(Icons.check),
             color: COLOR_MAIN,
-            textColor: COLOR_CHECK,
+            textColor: COLOR_CARD,
             label: const Text('Hoàn thành'),
             onPressed: () {},
           )
-        : Container(child: null, height: 42.0,);
+        : FlatButton.icon(
+            icon: const Icon(Icons.check),
+            textColor: COLOR_MAIN,
+            label: const Text('Đã xong'),
+            onPressed: null,
+          );
 
     return GestureDetector(
       onTap: () {},
@@ -178,7 +217,7 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
         children: <Widget>[
           Icon(
             iconData,
-            size: 15.0,
+            size: 19.0,
             color: COLOR_MAIN,
           ),
           Text(" ${text}",

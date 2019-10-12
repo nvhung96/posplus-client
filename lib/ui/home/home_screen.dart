@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:postplus_client/model/checklist.dart';
@@ -31,6 +32,9 @@ class _HomeScreenState extends BaseView implements AuthStateListener {
     _presenter = new HomePresenter(this);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
+
+    _presenter.getChecklists();
+
     super.initState();
   }
 
@@ -48,16 +52,34 @@ class _HomeScreenState extends BaseView implements AuthStateListener {
   @override
   Widget build(BuildContext context) {
     _context = context;
-    return new WillPopScope(
+    return WillPopScope(
         onWillPop: () async => false,
-        child: new Scaffold(
-          appBar: new AppBar(
-            title: new Text("$TITLE_CHECKLISTS"),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("$TITLE_CHECKLISTS"),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.sync, semanticLabel: 'Reload'),
+                onPressed: () => _presenter.getChecklists(),
+              ),
+            ],
           ),
           drawer: HomeDrawer(),
-          body: FutureBuilder(
+          body: _presenter.checklists.isNotEmpty
+              ? Scrollbar(
+                  child: ListView.builder(
+                    itemCount: _presenter.checklists.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return buildItem(_presenter.checklists[index]);
+                    },
+                  ),
+                )
+              : Container(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
+          /*body: FutureBuilder(
               future: _presenter.getChecklists(),
-              initialData: _presenter.checklists,
               builder: (BuildContext context,
                   AsyncSnapshot<List<Checklist>> checklists) {
                 if (checklists.data != null && checklists.data.length > 0) {
@@ -70,14 +92,18 @@ class _HomeScreenState extends BaseView implements AuthStateListener {
                     ),
                   );
                 } else {
-                  return Text("Đang tải dữ liệu...");
+                  return Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  );
                 }
-              }),
+              }),*/
         ));
   }
 
   Widget buildItem(Checklist checklist) {
     String createdAt = DateFormat("dd-MM-yyyy").format(checklist.createdAt);
+    String completedRate = "${checklist.completedCount}/${checklist.allCount}";
 
     return GestureDetector(
       onTap: () {
@@ -116,7 +142,8 @@ class _HomeScreenState extends BaseView implements AuthStateListener {
                         children: <Widget>[
                           buildItemTitle(checklist.name),
                           buildItemDetail(Icons.date_range, createdAt),
-                          buildItemDetail(Icons.check, "Hoàn thành: 15/20"),
+                          buildItemDetail(
+                              Icons.check, "Hoàn thành: ${completedRate}"),
                         ]),
                   ),
                 ],
@@ -163,8 +190,10 @@ class _HomeScreenState extends BaseView implements AuthStateListener {
     Navigator.push(
         _context,
         MaterialPageRoute(
-            builder: (BuildContext context) =>
-                ChecklistScreen(id: checklist.id)));
+            builder: (BuildContext context) => ChecklistScreen(
+                  id: checklist.id,
+                  name: checklist.name,
+                )));
   }
 
   @override

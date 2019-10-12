@@ -61,7 +61,7 @@ class AuthenRestRepo implements AuthenRepo {
     var res = await _networkUtil.post("${BASE_URL}/me", headers: headers);
 
     print("=====> URL Info: " + "${BASE_URL}/me");
-    print("=====> headers Info: " + headers.toString());
+    //print("=====> headers Info: " + headers.toString());
     print("=====> me Result: " + res.toString());
 
     if (res["data"] != null) {

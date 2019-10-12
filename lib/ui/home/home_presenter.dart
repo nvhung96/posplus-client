@@ -22,6 +22,8 @@ class HomePresenter extends BasePresenter {
     Map cond = Map();
 
     checklists = await _checklistRepo.getChecklists(cond, 1, 10);
+
+    notifyDataChanged();
     return checklists;
   }
 

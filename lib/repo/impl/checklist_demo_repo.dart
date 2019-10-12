@@ -11,6 +11,12 @@ class ChecklistImplRepo implements ChecklistRepo {
   }
 
   @override
+  Future<Checklist> getChecklist(int id) {
+    // TODO: implement getChecklist
+    return null;
+  }
+
+  @override
   Future<List<Item>> getItems(Map condition, int page, int limit) {
     // TODO: implement getItems
     return null;
@@ -21,5 +27,4 @@ class ChecklistImplRepo implements ChecklistRepo {
     // TODO: implement getItemsByChecklistId
     return null;
   }
-
 }

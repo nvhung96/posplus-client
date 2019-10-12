@@ -25,7 +25,7 @@ class ChecklistRestRepo implements ChecklistRepo {
     var res =
         await _networkUtil.get("${BASE_URL}/checklists", headers: headers);
 
-    print("=====> headers Info: " + headers.toString());
+    //print("=====> headers Info: " + headers.toString());
     print("=====> getChecklists Result: " + res.toString());
 
     if (res["error"] != null) {
@@ -42,6 +42,32 @@ class ChecklistRestRepo implements ChecklistRepo {
       }
 
       return checklists;
+    }
+  }
+
+  @override
+  Future<Checklist> getChecklist(int id) async {
+
+    String token = await _userRepo.getToken();
+
+    Map<String, String> headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer ${token}",
+    };
+
+    var res =
+    await _networkUtil.get("${BASE_URL}/checklist/detail/${id}", headers: headers);
+    print("=====> getChecklist Detail Result: " + res.toString());
+
+    if (res["error"] != null) {
+
+      if (res["error"]["type"] == "TokenExpiredException") {
+        var authStateProvider = new AuthStateProvider();
+        authStateProvider.notify(AuthState.LOGGED_OUT);
+      }
+      return null;
+    } else {
+      return Checklist.map(res["data"]);
     }
   }
 
@@ -63,7 +89,7 @@ class ChecklistRestRepo implements ChecklistRepo {
     var res = await _networkUtil.get("${BASE_URL}/checklists/${checklistId}",
         headers: headers);
 
-    print("=====> headers Info: " + headers.toString());
+    //print("=====> headers Info: " + headers.toString());
     print("=====> getItemsByChecklistId Result: " + res.toString());
 
     if (res["error"] != null) {

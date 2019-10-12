@@ -37,7 +37,7 @@ class UserPrefsRepo implements UserRepo {
     String userPrefs = await prefs.getString("user");
     if (userPrefs == null || userPrefs.isEmpty) return "";
 
-    print("=====> User Preference data (getToken): ${userPrefs.toString()}");
+    //print("=====> User Preference data (getToken): ${userPrefs.toString()}");
     User user = User.map(jsonDecode(userPrefs));
 
     return user.token;
