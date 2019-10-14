@@ -4,6 +4,13 @@ import 'package:postplus_client/util/sqlite_database.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserSqliteRepo implements UserRepo {
+
+  @override
+  Future<User> getUser() {
+    // TODO: implement getUser
+    return null;
+  }
+
   @override
   Future<int> saveUser(User user) async {
     SqliteDatabase db = new SqliteDatabase();

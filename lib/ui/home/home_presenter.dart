@@ -1,4 +1,5 @@
 import 'package:postplus_client/model/checklist.dart';
+import 'package:postplus_client/model/user.dart';
 import 'package:postplus_client/repo/checklist_repo.dart';
 import 'package:postplus_client/repo/impl/checklist_rest_repo.dart';
 import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
@@ -17,6 +18,7 @@ class HomePresenter extends BasePresenter {
   UserRepo _userRepo = UserPrefsRepo();
 
   List<Checklist> checklists = <Checklist>[];
+  User user;
 
   Future<List<Checklist>> getChecklists() async {
     Map cond = Map();
@@ -25,6 +27,11 @@ class HomePresenter extends BasePresenter {
 
     notifyDataChanged();
     return checklists;
+  }
+
+  Future<User> getUser() async {
+    user = await _userRepo.getUser();
+    notifyDataChanged();
   }
 
   Future deleteUsers() async {

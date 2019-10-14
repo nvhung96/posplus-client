@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
+import 'package:postplus_client/ui/home/home_presenter.dart';
 import 'package:postplus_client/ui/home/logout_contract.dart';
 import 'package:postplus_client/ui/home/logout_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
@@ -14,10 +15,13 @@ class HomeDrawer extends StatefulWidget {
 class HomeDrawerState extends BaseView implements LogoutContract {
   BuildContext _context;
   LogoutPresenter _presenter;
+  HomePresenter _homePresenter;
 
   @override
   void initState() {
     _presenter = new LogoutPresenter(this);
+    _homePresenter = new HomePresenter(this);
+    _homePresenter.getUser();
     super.initState();
   }
 
@@ -36,6 +40,10 @@ class HomeDrawerState extends BaseView implements LogoutContract {
   Widget build(BuildContext context) {
     _context = context;
 
+    String welcomeMsg = _homePresenter.user != null
+        ? "Chào ${_homePresenter.user.displayName} !"
+        : "Xin chào!";
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -43,7 +51,7 @@ class HomeDrawerState extends BaseView implements LogoutContract {
           UserAccountsDrawerHeader(
             accountName: Text(APP_NAME,
                 style: new TextStyle(fontWeight: FontWeight.bold)),
-            accountEmail: Text("Xin chào !",
+            accountEmail: Text(welcomeMsg,
                 style: new TextStyle(fontWeight: FontWeight.bold)),
             currentAccountPicture: new Image(
               image: new AssetImage("assets/logo.jpg"),
