@@ -2,7 +2,6 @@ import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/model/item.dart';
 import 'package:postplus_client/repo/checklist_repo.dart';
 import 'package:postplus_client/repo/impl/user_prefs_repo.dart';
-import 'package:postplus_client/repo/impl/user_sqlite_repo.dart';
 import 'package:postplus_client/repo/user_repo.dart';
 import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/util/constants.dart';
@@ -22,14 +21,19 @@ class ChecklistRestRepo implements ChecklistRepo {
       "Authorization": "Bearer ${token}",
     };
 
+    String url = "${BASE_URL}/checklists";
+    if (condition['time_range'] != null)
+      url += "?time_range=${condition['time_range']}";
+    else
+      url += "?time_range=today";
+
     var res =
-        await _networkUtil.get("${BASE_URL}/checklists", headers: headers);
+        await _networkUtil.get(url, headers: headers);
 
     //print("=====> headers Info: " + headers.toString());
     print("=====> getChecklists Result: " + res.toString());
 
     if (res["error"] != null) {
-
       if (res["error"]["type"] == "TokenExpiredException") {
         var authStateProvider = new AuthStateProvider();
         authStateProvider.notify(AuthState.LOGGED_OUT);
@@ -47,7 +51,6 @@ class ChecklistRestRepo implements ChecklistRepo {
 
   @override
   Future<Checklist> getChecklist(int id) async {
-
     String token = await _userRepo.getToken();
 
     Map<String, String> headers = {
@@ -55,12 +58,11 @@ class ChecklistRestRepo implements ChecklistRepo {
       "Authorization": "Bearer ${token}",
     };
 
-    var res =
-    await _networkUtil.get("${BASE_URL}/checklist/detail/${id}", headers: headers);
+    var res = await _networkUtil.get("${BASE_URL}/checklist/detail/${id}",
+        headers: headers);
     print("=====> getChecklist Detail Result: " + res.toString());
 
     if (res["error"] != null) {
-
       if (res["error"]["type"] == "TokenExpiredException") {
         var authStateProvider = new AuthStateProvider();
         authStateProvider.notify(AuthState.LOGGED_OUT);

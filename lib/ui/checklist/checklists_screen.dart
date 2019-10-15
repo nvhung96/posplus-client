@@ -1,34 +1,37 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:postplus_client/model/checklist.dart';
 import 'package:postplus_client/service/auth.dart';
 import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_screen.dart';
-import 'package:postplus_client/ui/checklist/checklists_screen.dart';
-import 'package:postplus_client/ui/home/home_drawer.dart';
 import 'package:postplus_client/ui/home/home_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
-class HomeScreen extends StatefulWidget {
+class ChecklistsScreen extends StatefulWidget {
+  ChecklistsScreen({Key key, this.timeRange, this.scaffoldKey})
+      : super(key: key);
+
+  final String timeRange;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _ChecklistsScreenState createState() =>
+      _ChecklistsScreenState(timeRange, scaffoldKey);
 }
 
-class _HomeScreenState extends BaseView
-    with SingleTickerProviderStateMixin
-    implements AuthStateListener {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final List<Widget> _timeRangeTabs = <Tab>[
-    Tab(text: "Hôm nay"),
-    Tab(text: "Hôm qua"),
-    Tab(text: "Tuần này"),
-    Tab(text: "Tháng này"),
-  ];
-
+class _ChecklistsScreenState extends BaseView implements AuthStateListener {
   BuildContext _context;
+
+  String _timeRange;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   HomePresenter _presenter;
-  TabController _tabController;
+  Map _searchCondition = Map();
+
+  _ChecklistsScreenState(
+      String timeRange, GlobalKey<ScaffoldState> scaffoldKey) {
+    _timeRange = timeRange;
+  }
 
   @override
   void initState() {
@@ -36,17 +39,14 @@ class _HomeScreenState extends BaseView
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
 
-    _presenter.getChecklists(Map());
+    if (_timeRange != null && _timeRange.isNotEmpty)
+      _searchCondition['time_range'] = _timeRange;
+    else
+      _searchCondition['time_range'] = 'today';
 
-    _tabController = TabController(length: _timeRangeTabs.length, vsync: this);
+    _presenter.getChecklists(_searchCondition);
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -56,7 +56,7 @@ class _HomeScreenState extends BaseView
 
   @override
   void onLogoutSuccess() {
-    print("HomeScreen_context: " + _context.toString());
+    print("ChecklistsScreen_context: " + _context.toString());
     Navigator.of(_context).pushNamed("/");
   }
 
@@ -64,57 +64,22 @@ class _HomeScreenState extends BaseView
   Widget build(BuildContext context) {
     _context = context;
 
-    AppBar appBar = AppBar(
-      title: Text("$TITLE_CHECKLISTS"),
-      actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.sync, semanticLabel: 'Reload'),
-          onPressed: () => _presenter.getChecklists(Map()),
-        ),
-      ],
+    return Scaffold(
+      key: _scaffoldKey,
+      body: _presenter.checklists.isNotEmpty
+          ? Scrollbar(
+              child: ListView.builder(
+                itemCount: _presenter.checklists.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return buildItem(_presenter.checklists[index]);
+                },
+              ),
+            )
+          : Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            ),
     );
-
-    Widget tabBars = Container(
-      decoration: BoxDecoration(color: Colors.white60),
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true,
-        indicator: BoxDecoration(color: COLOR_MAIN),
-        unselectedLabelColor: Colors.black,
-        tabs: _timeRangeTabs,
-      ),
-    );
-
-    Widget tabBarViews = Container(
-        height:
-            MediaQuery.of(context).size.height - appBar.preferredSize.height,
-        child: TabBarView(controller: _tabController, children: <Widget>[
-          ChecklistsScreen(
-            timeRange: "today",
-            scaffoldKey: _scaffoldKey,
-          ),
-          ChecklistsScreen(
-            timeRange: "yesterday",
-            scaffoldKey: _scaffoldKey,
-          ),
-          ChecklistsScreen(
-            timeRange: "this_week",
-            scaffoldKey: _scaffoldKey,
-          ),
-          ChecklistsScreen(
-            timeRange: "this_month",
-            scaffoldKey: _scaffoldKey,
-          ),
-        ]));
-
-    return WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-            appBar: appBar,
-            drawer: HomeDrawer(),
-            body: ListView(
-              children: <Widget>[tabBars, tabBarViews],
-            )));
   }
 
   Widget buildItem(Checklist checklist) {
@@ -215,7 +180,7 @@ class _HomeScreenState extends BaseView
   @override
   void onAuthStateChanged(AuthState state) async {
     if (state == AuthState.LOGGED_OUT) {
-      print("HomeScreen_context: " + _context.toString());
+      print("ChecklistsScreen_context: " + _context.toString());
       await _presenter.deleteUsers();
       Navigator.of(_context).pushNamed("/");
     }

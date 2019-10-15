@@ -6,15 +6,6 @@ import 'package:postplus_client/ui/base/base_view.dart';
 import 'package:postplus_client/ui/checklist/checklist_presenter.dart';
 import 'package:postplus_client/util/constants.dart';
 
-const ShapeBorder shapeBorder = const RoundedRectangleBorder(
-  borderRadius: BorderRadius.only(
-    topLeft: Radius.circular(0.0),
-    topRight: Radius.circular(0.0),
-    bottomLeft: Radius.circular(0.0),
-    bottomRight: Radius.circular(0.0),
-  ),
-);
-
 class ChecklistScreen extends StatefulWidget {
   ChecklistScreen({Key key, this.id, this.name}) : super(key: key);
 
@@ -161,7 +152,7 @@ class _ChecklistScreenState extends BaseView implements AuthStateListener {
             child: Card(
               // This ensures that the Card's children are clipped correctly.
               clipBehavior: Clip.antiAlias,
-              shape: shapeBorder,
+              shape: SHAPE_BORDER,
               elevation: 8.0,
               color: cardColor,
               child: Row(

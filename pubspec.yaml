@@ -23,6 +23,8 @@ dependencies:
   bordered_text: ^0.1.4
   intl: ^0.16.0
   shared_preferences: ^0.5.3+4
+  qrcode_reader: ^0.4.4
+
   flutter:
     sdk: flutter
 
@@ -47,8 +49,8 @@ flutter:
   uses-material-design: true
 
   assets:
-  - assets/login_background.jpg
-  - assets/logo.jpg
+    - assets/login_background.jpg
+    - assets/logo.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

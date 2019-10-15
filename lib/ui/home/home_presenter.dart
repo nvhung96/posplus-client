@@ -20,10 +20,8 @@ class HomePresenter extends BasePresenter {
   List<Checklist> checklists = <Checklist>[];
   User user;
 
-  Future<List<Checklist>> getChecklists() async {
-    Map cond = Map();
-
-    checklists = await _checklistRepo.getChecklists(cond, 1, 10);
+  Future<List<Checklist>> getChecklists(Map cond) async {
+    checklists = await _checklistRepo.getChecklists(cond, 1, 50);
 
     notifyDataChanged();
     return checklists;
